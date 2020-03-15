@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.web.react.user.model.CommunityUser;
+import com.web.react.utils.DAOUtils;
 import com.web.react.utils.JsonHelper;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -100,16 +101,9 @@ public class UserDaoImpl implements UserDao{
 		return user;
 	} 
 	
-	
-	
-	
-	
-	private int getNextId(String table) {
+	public int getNextId(String table) {
 		String query = "SELECT IFNULL(MAX(ID),0)+1 FROM " + table;
 		return jdbcTemplate.queryForObject(query, int.class);
 	}
-
-	
-	
 	
 }
