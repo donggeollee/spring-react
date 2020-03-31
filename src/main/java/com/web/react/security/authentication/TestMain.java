@@ -5,7 +5,7 @@ import org.springframework.security.core.Authentication;
 
 public class TestMain {
 
-	private static JWTprovider JwtProvider = new JWTprovider();
+	private static JwtTokenProvider JwtProvider = new JwtTokenProvider();
 	
     public static void main(String[] args) {
     	

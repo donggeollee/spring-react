@@ -1,0 +1,102 @@
+package com.web.react.user;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
+
+/**
+ * 
+ * @author donghyuck
+ * 
+ */
+public interface ConfigService {
+	
+	public boolean isSetupComplete();
+	
+	/**
+	 * 데이터베이스 구성 여부를 리턴한다.
+	 * @return
+	 */
+	public boolean isDatabaseInitialized();
+	
+	public Locale getLocale();
+	
+	public void setLocale(Locale newLocale);
+	
+	public String getCharacterEncoding() ;
+	
+	public void setCharacterEncoding(String characterEncoding) throws UnsupportedEncodingException;
+	
+	public TimeZone getTimeZone() ;
+	
+	public void setTimeZone(TimeZone newTimeZone);
+	
+	public boolean isSetDataSource();
+	
+	/**
+	 * startup-config.xml 파일에 저장된 프로퍼티 값을 리턴한다.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public String getLocalProperty(String name);
+
+	public String getLocalProperty(String name, String defaultValue) ;
+	
+	
+	public int getLocalProperty(String name, int defaultValue);
+
+	/**
+	 * 자식에 해당하는 프로퍼티 값들을 리턴한다.
+	 * 
+	 * @param parent
+	 * @return
+	 */
+	public List<String> getLocalProperties(String parent);
+
+	/**
+	 * 프로퍼티 값을 설정 한다.
+	 * 
+	 * @param name
+	 * @param value
+	 */
+	public void setLocalProperty(String name, String value);
+
+	/**
+	 * 한번에 여러 프로퍼티 값들을 저장한다.
+	 * 
+	 * @param propertyMap
+	 */
+	public void setLocalProperties(Map<String, String> propertyMap);
+
+	/**
+	 * name 에 해당하는 프로퍼티를 삭제한다.
+	 * 
+	 * @param name
+	 */
+	public void deleteLocalProperty(String name);
+
+	public String getApplicationProperty(String name);
+
+	public String getApplicationProperty(String name, String defaultValue);
+
+	public List<String> getApplicationPropertyNames();
+
+	public List<String> getApplicationPropertyNames(String parent);
+
+	public List<String> getApplicationProperties(String parent);
+
+	public int getApplicationIntProperty(String name, int defaultValue);
+
+	public boolean getApplicationBooleanProperty(String name);
+
+	public boolean getApplicationBooleanProperty(String name, boolean defaultValue);
+
+	public void setApplicationProperty(String name, String defaultValue);
+
+	public void setApplicationProperties(Map<String, String> map);
+
+	public void deleteApplicationProperty(String name);
+}

@@ -24,7 +24,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
-public class JWTprovider{
+public class JwtTokenProvider{
 	
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
