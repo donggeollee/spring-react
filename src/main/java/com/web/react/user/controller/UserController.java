@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -121,5 +122,21 @@ public class UserController {
 		}
 		
 		return result;
+	}
+	 
+	@GetMapping("/loginPage")
+	public String loginPage() {
+		return "login";
+	}
+	
+	@PostMapping("/auth/login")
+	@ResponseBody
+	public Object statefulLogin(@RequestBody String userLoginInfo) {
+		
+		Map<String, Object> loginInfo = ParamUtils.jsonFormatStringToJavaObject(userLoginInfo, Map.class);
+		
+		log.info("loginInfo : " + JsonHelper.Obj2Json(loginInfo));
+		
+		return loginInfo;
 	}
 }
