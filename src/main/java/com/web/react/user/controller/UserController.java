@@ -118,7 +118,7 @@ public class UserController {
 			
 		}catch(Exception e) {
 			result.setError(e);
-			e.printStackTrace();
+			e.printStackTrace(); 
 		}
 		
 		return result;
