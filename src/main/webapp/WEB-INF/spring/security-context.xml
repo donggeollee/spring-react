@@ -50,12 +50,13 @@
 		<intercept-url pattern="/secure/data/**" 			access="hasRole('ROLE_USER') or hasRole('ROLE_SYSTEM')" /> 
 		
 		<!-- Form Long Page Setting -->
-		<form-login login-page="/accounts/login"
+		<form-login login-page="/loginPage"
 			username-parameter="username" 
 			password-parameter="password"
-			login-processing-url="/accounts/auth/login_check"
+			login-processing-url="/user/auth/login"
 			authentication-success-handler-ref="authenticationSuccessHandler"
-			authentication-failure-handler-ref="authenticationFailureHandler" />
+			authentication-failure-handler-ref="authenticationFailureHandler" 
+		/>
 		<http-basic />
 		
 		<!-- <custom-filter before="BASIC_AUTH_FILTER" ref="jwtFilter" /> -->

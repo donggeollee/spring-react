@@ -1,7 +1,5 @@
 package com.web.react.user.model;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 public class CommunityUser {
