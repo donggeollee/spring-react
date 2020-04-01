@@ -31,6 +31,8 @@
 	<http pattern="/css/**" security="none" />
 	<http pattern="/setup/local.jsp" security="none" />
 	
+	<beans:bean id="requestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache" />
+	
 	<http auto-config="true" use-expressions="true" disable-url-rewriting="true">
 	
 <!-- 		<cors configuration-source-ref="corsSource"/>  -->
@@ -50,10 +52,10 @@
 		<intercept-url pattern="/secure/data/**" 			access="hasRole('ROLE_USER') or hasRole('ROLE_SYSTEM')" /> 
 		
 		<!-- Form Long Page Setting -->
-		<form-login login-page="/accounts/login"
+		<form-login login-page="/user/loginPage"
 			username-parameter="username" 
 			password-parameter="password"
-			login-processing-url="/accounts/auth/login_check"
+			login-processing-url="/user/auth/login"
 			authentication-success-handler-ref="authenticationSuccessHandler"
 			authentication-failure-handler-ref="authenticationFailureHandler" />
 		<http-basic />
@@ -77,11 +79,14 @@
         <!-- 접근 불허시 보여줄 페이지 설정 -->         
         <access-denied-handler error-page="/error/unauthorized" /><http-basic /><http-basic />
 		
+		<request-cache ref="requestCache"/>
 	</http>
 	
 	<authentication-manager id="authenticationManager">
 		<authentication-provider ref="authenticationProvider"/>
 	</authentication-manager>
+	
+	
 	
 	<beans:bean id="authenticationProvider" class="com.web.react.security.security.CommunityAuthenticationProvider" p:passwordEncoder-ref="passwordEncoder" p:userDetailsService-ref="userDetailsService" />
 	
@@ -89,7 +94,7 @@
 	
 	<beans:bean id="authenticationFailureHandler" class="com.web.react.security.security.CommunityAuthenticationFailureHandler" p:defaultFailureUrl="/accounts/login?error" />
 	
-	<beans:bean id="userDetailsService" class="com.web.react.security.security.CommunityUserDetailsService" />
+	<beans:bean id="userDetailsService" class="com.web.react.security.security.CommunityUserDetailsService" /> 
 	
 	<beans:bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></beans:bean>
 	

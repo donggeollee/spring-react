@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,32 +30,30 @@ public class UserDaoImpl implements UserDao{
 
 	@Override
 	public CommunityUser selectUserByUsername(String username) {  
-		String query  = "SELECT ID, USERNAME, PASSWORD, NICKNAME, CREATEDAT, UPDATEDAT FROM USERS WHERE USERNAME = ?";
+		String query  = "SELECT ID, USERNAME, NICKNAME, CREATEDAT, UPDATEDAT FROM USERS WHERE USERNAME = ?";
 		
 		CommunityUser user = null; 
-		
-		try {
-			user = jdbcTemplate.queryForObject(query, new RowMapper<CommunityUser>() {
-				@Override
-				public CommunityUser mapRow(ResultSet rs, int rowNum) throws SQLException {
-					CommunityUser user = new CommunityUser(
-													rs.getInt(1),
-													rs.getString(2), 
-													rs.getString(3),  
-													rs.getString(4),
-													rs.getDate(5),
-													rs.getDate(6)
-													);
-					return user; 
-				}
-			}, username);
-		} catch(Exception e) {
-			log.error(e.getMessage());
-		}
-	 
-		if ( user != null ) 
-			log.info(user.getUsername());
-		
+//		
+//		try {
+//			List<Map<String,Object>> userList = jdbcTemplate.queryForList(query);
+//			
+//			if ( !userList.isEmpty() ) {
+//				Map<String, Object> tempUser = userList.get(0);
+//				
+//				user = new CommunityUser(tempUser.get("USERNAME").toString(), "", authorities);
+//				
+//				user.setNickname(tempUser.get("NICKNAME").toString());
+//			}
+//			
+//			
+//			
+//		} catch(Exception e) {
+//			log.error(e.getMessage());
+//		}
+//	 
+//		if ( user != null ) 
+//			log.info(user.getUsername());
+//		
 		return user;
 	}
 
@@ -79,23 +79,23 @@ public class UserDaoImpl implements UserDao{
 		CommunityUser user = null; 
 		if( saveCount == 1 ) {
 			String query2 = "SELECT ID, USERNAME, PASSWORD, NICKNAME, CREATEDAT, UPDATEDAT FROM USERS WHERE ID = ? ";
-			try {
-				user = jdbcTemplate.queryForObject(query2, new RowMapper<CommunityUser>() {
-					@Override
-					public CommunityUser mapRow(ResultSet rs, int rowNum) throws SQLException {
-						CommunityUser user = new CommunityUser(   rs.getInt(1) 
-																, rs.getString(2)
-																, rs.getString(3)
-																, rs.getString(4)
-																, rs.getDate(5)
-																, rs.getDate(6)
-															);
-						return user;
-					}
-				}, nextId);
-			} catch(Exception e) {
-				log.error(e.getLocalizedMessage());
-			}
+//			try {
+//				user = jdbcTemplate.queryForObject(query2, new RowMapper<CommunityUser>() {
+//					@Override
+//					public CommunityUser mapRow(ResultSet rs, int rowNum) throws SQLException {
+//						CommunityUser user = new CommunityUser(   rs.getInt(1) 
+//																, rs.getString(2)
+//																, rs.getString(3)
+//																, rs.getString(4)
+//																, rs.getDate(5)
+//																, rs.getDate(6)
+//															);
+//						return user;
+//					}
+//				}, nextId);
+//			} catch(Exception e) {
+//				log.error(e.getLocalizedMessage());
+//			}
 		}
 		log.info("Signup success user : " + JsonHelper.Obj2Json(user));
 		return user;

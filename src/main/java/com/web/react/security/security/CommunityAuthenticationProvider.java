@@ -10,7 +10,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 // import com.web.react.user.UserManager;
 
@@ -35,6 +37,11 @@ public class CommunityAuthenticationProvider extends DaoAuthenticationProvider {
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		logger.info("===================authenticate=====================");
+		logger.info(":: authentication.getPrincipal() : " + authentication.getPrincipal());
+		logger.info(":: authentication.getCredentials() : " + authentication.getCredentials());
+		
+		authentication 객체에 ajax 요청의 로그인 정보가 안 담기는 문제....spring security ajax 인증 어떻게 함?
+		
 		return super.authenticate(authentication);
 	}
 	

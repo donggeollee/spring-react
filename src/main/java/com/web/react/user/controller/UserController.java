@@ -129,9 +129,11 @@ public class UserController {
 		return "login";
 	}
 	
-	@PostMapping("/auth/login")
 	@ResponseBody
+	@PostMapping("/auth/login")
 	public Object statefulLogin(@RequestBody String userLoginInfo) {
+		log.info("login Controller 도착");
+		log.info("userLoginInfo : " + userLoginInfo);
 		
 		Map<String, Object> loginInfo = ParamUtils.jsonFormatStringToJavaObject(userLoginInfo, Map.class);
 		

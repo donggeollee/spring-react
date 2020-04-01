@@ -1,11 +1,16 @@
 package com.web.react.user.model;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
-public class CommunityUser {
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+
+public class CommunityUser extends User{
 	
+	private static final long serialVersionUID = 1L;
 	
 	private int id;
 	private String username;
@@ -13,15 +18,12 @@ public class CommunityUser {
 	private String nickname;
 	private Date createdAt;
 	private Date updatedAt;
+	private ArrayList<SimpleGrantedAuthority> authorities;
 	
-	public CommunityUser(int id, String username, String password, String nickname, Date createdAt, Date updatedAt) {
-		super();
-		this.id = id;
+	public CommunityUser(String username, String password, Collection<? extends GrantedAuthority> authorities) {
+		super(username, password, authorities);
 		this.username = username;
 		this.password = password;
-		this.nickname = nickname;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
 	}
 	
 	public int getId() {
@@ -61,5 +63,8 @@ public class CommunityUser {
 		this.updatedAt = updatedAt;
 	}
 	
+	public void addAuthority(SimpleGrantedAuthority authority) {
+		authorities.add(authority);
+	}
 
 }
