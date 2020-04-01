@@ -28,103 +28,125 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 	
 	private RequestCache requestCache = new HttpSessionRequestCache();
 
+	
 	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request,
-			HttpServletResponse response, Authentication authentication)
-			throws ServletException, IOException {
+	public void onAuthenticationSuccess( HttpServletRequest request, 
+										 HttpServletResponse response,
+										 Authentication authentication) throws IOException, ServletException {
+		logger.info("==============onAuthenticationSuccess===============");
 		
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
-
-		if (savedRequest == null) {
-			logger.debug("no savend request");			
-			if (ServletUtils.isAcceptJson(request)) {
-				logger.debug("handle json request");
-				handleJsonRequest(request, response, authentication);
-			}else{
-				logger.debug("handle normal request");
-				super.onAuthenticationSuccess(request, response, authentication);
-			}
-			return;
-			
-		}
+		logger.info("savedRequest.getCookies() : " + savedRequest.getCookies());
+		logger.info("savedRequest.getMethod() : " + savedRequest.getMethod());
+		logger.info("savedRequest.getRedirectUrl() : " + savedRequest.getRedirectUrl());
+		logger.info("savedRequest.getHeaderNames() : " + savedRequest.getHeaderNames());
+		logger.info("savedRequest.getHeaderValues(referer)() : " + savedRequest.getHeaderValues("referer"));
+		logger.info("savedRequest.getLocales() : " + savedRequest.getLocales());
+		logger.info("savedRequest.getParameterMap() : " + savedRequest.getParameterMap());
 		
-		String targetUrlParameter = getTargetUrlParameter();		
-		logger.debug("target parameters {0}", (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) );
-		
-		if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
-			requestCache.removeRequest(request, response);
-			super.onAuthenticationSuccess(request, response, authentication);
-
-			return;
-		}
-
-		logger.debug("clear authentication attrs");
-		clearAuthenticationAttributes(request);
-
-		// Use the DefaultSavedRequest URL
-		String targetUrl = savedRequest.getRedirectUrl();
-		logger.debug("Redirecting to DefaultSavedRequest Url: " + targetUrl);
-		getRedirectStrategy().sendRedirect(request, response, targetUrl);
-	}
-
-	
-	public void onAuthenticationSuccess2(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-		SavedRequest savedRequest = requestCache.getRequest(request, response);
-		// Checking Cache Exist.
-		if (savedRequest == null) {		
-			doAuthenticationSuccess(request, response, authentication);		
-		}		
-		String targetUrlParameter = getTargetUrlParameter();
-		if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
-			requestCache.removeRequest(request, response);			
-			doAuthenticationSuccess(request, response, authentication);			
-		}		
-		clearAuthenticationAttributes(request);
-		// Use the DefaultSavedRequest URL
-		if (ServletUtils.isAcceptJson(request)) {
-			handleJsonRequest(request, response, authentication);
-		}else{			
-			String targetUrl = savedRequest.getRedirectUrl();
-			logger.debug("Redirecting to Default SavedRequest Url: " + targetUrl);		
-			getRedirectStrategy().sendRedirect(request, response, targetUrl);
-		}
+		super.onAuthenticationSuccess(request, response, authentication);
 	}
 	
-	public void setRequestCache(RequestCache requestCache) {
-		this.requestCache = requestCache;
-	}
 	
-	protected void doAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {		
-		if (ServletUtils.isAcceptJson(request)) {
-			handleJsonRequest(request, response, authentication);
-			return;
-		}else{		
-			super.onAuthenticationSuccess(request, response, authentication);	
-		}
-	}
 	
-	protected void handleJsonRequest(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException{
-		Result result = Result.newResult();
-		result.getData().put("success", true);
-		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));		
-		String referer = request.getHeader("Referer");		
-		if (StringUtils.isNullOrEmpty(referer))
-			result.getData().put("referer", referer);
-		
-		Map<String, Object> model = new ModelMap();
-		model.put("item", result);
-		try {
-			createJsonViewAndRender(model, request, response);
-		} catch (Exception e) {}	
-	}
 	
-	protected void createJsonViewAndRender(Map<String, ?> model, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		response.setHeader("Access-Control-Allow-Origin","*");
-		MappingJackson2JsonView view = new MappingJackson2JsonView();
-		view.setExtractValueFromSingleKeyModel(true);
-		view.setModelKey("item");
-		view.render(model, request, response);
-	}
+//	@Override
+//	public void onAuthenticationSuccess(HttpServletRequest request,
+//			HttpServletResponse response, Authentication authentication)
+//			throws ServletException, IOException {
+//		
+//		SavedRequest savedRequest = requestCache.getRequest(request, response);
+//
+//		if (savedRequest == null) {
+//			logger.debug("no savend request");			
+//			if (ServletUtils.isAcceptJson(request)) {
+//				logger.debug("handle json request");
+//				handleJsonRequest(request, response, authentication);
+//			}else{
+//				logger.debug("handle normal request");
+//				super.onAuthenticationSuccess(request, response, authentication);
+//			}
+//			return;
+//			
+//		}
+//		
+//		String targetUrlParameter = getTargetUrlParameter();		
+//		logger.debug("target parameters {0}", (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) );
+//		
+//		if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
+//			requestCache.removeRequest(request, response);
+//			super.onAuthenticationSuccess(request, response, authentication);
+//
+//			return;
+//		}
+//
+//		logger.debug("clear authentication attrs");
+//		clearAuthenticationAttributes(request);
+//
+//		// Use the DefaultSavedRequest URL
+//		String targetUrl = savedRequest.getRedirectUrl();
+//		logger.debug("Redirecting to DefaultSavedRequest Url: " + targetUrl);
+//		getRedirectStrategy().sendRedirect(request, response, targetUrl);
+//	}
+//
+//	
+//	public void onAuthenticationSuccess2(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+//		SavedRequest savedRequest = requestCache.getRequest(request, response);
+//		// Checking Cache Exist.
+//		if (savedRequest == null) {		
+//			doAuthenticationSuccess(request, response, authentication);		
+//		}		
+//		String targetUrlParameter = getTargetUrlParameter();
+//		if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
+//			requestCache.removeRequest(request, response);			
+//			doAuthenticationSuccess(request, response, authentication);			
+//		}		
+//		clearAuthenticationAttributes(request);
+//		// Use the DefaultSavedRequest URL 
+//		if (ServletUtils.isAcceptJson(request)) {
+//			handleJsonRequest(request, response, authentication);
+//		}else{			
+//			String targetUrl = savedRequest.getRedirectUrl();
+//			logger.debug("Redirecting to Default SavedRequest Url: " + targetUrl);		
+//			getRedirectStrategy().sendRedirect(request, response, targetUrl);
+//		}
+//	}
+//	
+//	public void setRequestCache(RequestCache requestCache) {
+//		this.requestCache = requestCache;
+//	}
+//	
+//	protected void doAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {		
+//		if (ServletUtils.isAcceptJson(request)) {
+//			handleJsonRequest(request, response, authentication);
+//			return;
+//		}else{		
+//			super.onAuthenticationSuccess(request, response, authentication);	
+//		}
+//	}
+//	
+//	protected void handleJsonRequest(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException{
+//		Result result = Result.newResult();
+//		result.getData().put("success", true);
+//		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));		
+//		String referer = request.getHeader("Referer");		
+//		if (StringUtils.isNullOrEmpty(referer))
+//			result.getData().put("referer", referer);
+//		
+//		Map<String, Object> model = new ModelMap();
+//		model.put("item", result);
+//		try {
+//			createJsonViewAndRender(model, request, response);
+//		} catch (Exception e) {}	
+//	}
+//	
+//	protected void createJsonViewAndRender(Map<String, ?> model, HttpServletRequest request,
+//			HttpServletResponse response) throws Exception {
+//		response.setHeader("Access-Control-Allow-Origin","*");
+//		MappingJackson2JsonView view = new MappingJackson2JsonView();
+//		view.setExtractValueFromSingleKeyModel(true);
+//		view.setModelKey("item");
+//		view.render(model, request, response);
+//	}
 
 }
