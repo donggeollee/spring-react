@@ -2,6 +2,7 @@ package com.web.react.user.dao;
 
 import java.sql.ResultSet;
 
+
 import java.sql.SQLException;
 import java.sql.Types;
 
@@ -13,7 +14,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.web.react.user.model.CommunityUser;
-import com.web.react.utils.DAOUtils;
 import com.web.react.utils.JsonHelper;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
