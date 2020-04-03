@@ -25,7 +25,6 @@
 				p:password="${DB_PASSWORD}"  
 				p:driverClassName="${DB_DRIVER_CLASS_NAME}"  />
 
-
 		<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"
 			p:dataSource-ref="dataSource"
 		/>
@@ -34,4 +33,5 @@
 		
 		<bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"
 		p:contentType="application/json;charset=UTF-8"/>
+		
 </beans>

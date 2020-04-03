@@ -3,6 +3,11 @@ package com.web.react.user.controller;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.web.react.security.security.CommunityUserDetailsService;
 import com.web.react.user.dao.UserDao;
 import com.web.react.user.model.CommunityUser;
 import com.web.react.utils.JsonHelper;
@@ -130,15 +136,25 @@ public class UserController {
 	}
 	
 	@ResponseBody
-	@PostMapping("/auth/login")
+	@PostMapping("/auth/login_test")
 	public Object statefulLogin(@RequestBody String userLoginInfo) {
 		log.info("login Controller 도착");
 		log.info("userLoginInfo : " + userLoginInfo);
 		
 		Map<String, Object> loginInfo = ParamUtils.jsonFormatStringToJavaObject(userLoginInfo, Map.class);
+		String principal = loginInfo.get("username") != null ? loginInfo.get("username").toString() : "";
+		String credential = loginInfo.get("username") != null ? loginInfo.get("password").toString() : "";
 		
-		log.info("loginInfo : " + JsonHelper.Obj2Json(loginInfo));
+//		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+//		
+//		UserDetailsService userDetailsService = new CommunityUserDetailsService(); 
+//		UserDetails user = (CommunityUser)userDetailsService.loadUserByUsername(principal); 
+//		UsernamePasswordAuthenticationToken loginToken = null;
+//		if (encoder.matches(credential, user.getPassword())) {
+//			loginToken = new UsernamePasswordAuthenticationToken(user.getUsername(), "", user.getAuthorities());
+//		}
+//		SecurityContextHolder.getContext().setAuthentication(loginToken);
 		
-		return loginInfo;
+		return 'Y';
 	}
 }

@@ -39,6 +39,7 @@ public class JWTFilter extends GenericFilterBean {
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
 		
+		logger.debug("==================JWTFilter==================");
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		
@@ -51,7 +52,7 @@ public class JWTFilter extends GenericFilterBean {
         try { 
             String jwt = this.resolveToken(request); 
              if (!StringUtils.isNullOrEmpty(jwt)) {
-            	 logger.debug("jwt token : {}", jwt);
+            	logger.debug("jwt token : {}", jwt);
                 if (this.jwtTokenProvider.validateToken(jwt)) {
                     Authentication authentication = this.jwtTokenProvider.getAuthentication(jwt);
                     SecurityContextHolder.getContext().setAuthentication(authentication);

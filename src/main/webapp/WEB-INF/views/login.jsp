@@ -18,7 +18,11 @@
 				password : $("#password").val(),
 			};
 			
+			console.log(111111111111111111);
 			console.log(loginObj);
+			console.log(222222222222222222);
+			console.log($("#loginForm").serialize());
+			
 			
 			$.ajax({
 			    url: "<%=request.getContextPath()%>/user/auth/login",

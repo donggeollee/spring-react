@@ -8,8 +8,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.ui.ModelMap;
@@ -30,50 +32,43 @@ public class CommunityAuthenticationFailureHandler extends SimpleUrlAuthenticati
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
 		logger.info("================onAuthenticationFailure=====================");
-		super.onAuthenticationFailure(request, response, exception);
+		logger.info("ContentType.APPLICATION_JSON.toString() : {}",ContentType.APPLICATION_JSON);
+		
+		if( request.getHeader(HttpHeaders.CONTENT_TYPE).equals(ContentType.APPLICATION_JSON.getMimeType()) ) {
+			logger.debug("handle json request");
+			handleJsonRequest(request, response, exception); 
+		} else {
+			logger.debug("handle normal request");
+			super.onAuthenticationFailure(request, response, exception);
+		}
 	}
 
-//	@Override
-//	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-//			AuthenticationException exception) throws IOException, ServletException {
-//		
-//		logger.debug("no savend request");			
-//		if (ServletUtils.isAcceptJson(request)) {
-//			logger.debug("handle json request");
-//			handleJsonRequest(request, response, exception);
-//		}else{
-//			logger.debug("handle normal request");
-//			super.onAuthenticationFailure(request, response, exception);
-//		}
-//		return;
-//		
-//	}
-//
-//	protected void handleJsonRequest(HttpServletRequest request, HttpServletResponse response, AuthenticationException  exception) throws IOException, ServletException{
-//		Result result = Result.newResult();
-//		result.setError(exception);
-//		
-//		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));		
-//		String referer = request.getHeader("Referer");		
-//		if (StringUtils.isNullOrEmpty(referer))
-//			result.getData().put("referer", referer);
-//		
-//		Map<String, Object> model = new ModelMap();
-//		model.put("item", result);
-//		try {
-//			createJsonViewAndRender(model, request, response);
-//		} catch (Exception e) {}	
-//	}
-//	
-//	
-//	protected void createJsonViewAndRender(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-//		
-//		response.setHeader("Access-Control-Allow-Origin","*");
-//		
-//		MappingJackson2JsonView view = new MappingJackson2JsonView();
-//		view.setExtractValueFromSingleKeyModel(true);
-//		view.setModelKey("item");
-//		view.render(model, request, response);
-//	}
+	protected void handleJsonRequest(HttpServletRequest request, HttpServletResponse response, AuthenticationException  exception) throws IOException, ServletException{
+		Result result = Result.newResult();
+		result.setError(exception);
+		
+		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));		
+		String referer = request.getHeader("Referer");		
+		if (StringUtils.isNullOrEmpty(referer)) {
+			result.getData().put("referer", referer);
+		}
+		
+		Map<String, Object> model = new ModelMap();
+		model.put("item", result);
+		try {
+			createJsonViewAndRender(model, request, response);
+		} catch (Exception e) {}	
+	}
+	
+	
+	protected void createJsonViewAndRender(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		response.setHeader("Access-Control-Allow-Origin","*");
+		
+		MappingJackson2JsonView view = new MappingJackson2JsonView();
+		view.setExtractValueFromSingleKeyModel(true);
+		view.setModelKey("item");
+		view.render(model, request, response);
+	}
 	
 }

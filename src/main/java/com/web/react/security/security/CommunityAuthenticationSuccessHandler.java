@@ -8,8 +8,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
@@ -26,8 +29,8 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
-	private RequestCache requestCache = new HttpSessionRequestCache();
-
+	@Autowired
+	RequestCache requestCache;
 	
 	@Override
 	public void onAuthenticationSuccess( HttpServletRequest request, 
@@ -36,15 +39,20 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 		logger.info("==============onAuthenticationSuccess===============");
 		
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
-		logger.info("savedRequest.getCookies() : " + savedRequest.getCookies());
-		logger.info("savedRequest.getMethod() : " + savedRequest.getMethod());
-		logger.info("savedRequest.getRedirectUrl() : " + savedRequest.getRedirectUrl());
-		logger.info("savedRequest.getHeaderNames() : " + savedRequest.getHeaderNames());
-		logger.info("savedRequest.getHeaderValues(referer)() : " + savedRequest.getHeaderValues("referer"));
-		logger.info("savedRequest.getLocales() : " + savedRequest.getLocales());
-		logger.info("savedRequest.getParameterMap() : " + savedRequest.getParameterMap());
 		
-		super.onAuthenticationSuccess(request, response, authentication);
+		if( savedRequest == null ) {
+			logger.info("savedRequest is null");
+		} else { 
+			logger.info("savedRequest is not null");
+		}
+		
+		if( request.getHeader(HttpHeaders.CONTENT_TYPE).equals(ContentType.APPLICATION_JSON.getMimeType()) ) {
+			logger.info("handle json Request");
+			handleJsonRequest(request, response, authentication);
+		} else {
+			logger.info("handle normal Request");
+			super.onAuthenticationSuccess(request, response, authentication);
+		}
 	}
 	
 	
@@ -125,28 +133,28 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 //		}
 //	}
 //	
-//	protected void handleJsonRequest(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException{
-//		Result result = Result.newResult();
-//		result.getData().put("success", true);
-//		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));		
-//		String referer = request.getHeader("Referer");		
-//		if (StringUtils.isNullOrEmpty(referer))
-//			result.getData().put("referer", referer);
-//		
-//		Map<String, Object> model = new ModelMap();
-//		model.put("item", result);
-//		try {
-//			createJsonViewAndRender(model, request, response);
-//		} catch (Exception e) {}	
-//	}
-//	
-//	protected void createJsonViewAndRender(Map<String, ?> model, HttpServletRequest request,
-//			HttpServletResponse response) throws Exception {
-//		response.setHeader("Access-Control-Allow-Origin","*");
-//		MappingJackson2JsonView view = new MappingJackson2JsonView();
-//		view.setExtractValueFromSingleKeyModel(true);
-//		view.setModelKey("item");
-//		view.render(model, request, response);
-//	}
+	protected void handleJsonRequest(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException{
+		Result result = Result.newResult();
+		result.getData().put("success", true);
+		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));		
+		String referer = request.getHeader("Referer");		
+		if (StringUtils.isNullOrEmpty(referer))
+			result.getData().put("referer", referer);
+		
+		Map<String, Object> model = new ModelMap();
+		model.put("item", result);
+		try {
+			createJsonViewAndRender(model, request, response);
+		} catch (Exception e) {}	
+	}
+	
+	protected void createJsonViewAndRender(Map<String, ?> model, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		response.setHeader("Access-Control-Allow-Origin","*");
+		MappingJackson2JsonView view = new MappingJackson2JsonView();
+		view.setExtractValueFromSingleKeyModel(true);
+		view.setModelKey("item");
+		view.render(model, request, response);
+	}
 
 }

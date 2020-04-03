@@ -28,23 +28,26 @@ public class CommunityUserDetailsService implements UserDetailsService{
 		log.info("=================loadUserByUsername==============");
 		log.info(":: username : " + username);
 		
-		
-		// db에서 사용자 정보 조회하는 로직 
-//		String query = " SELECT * FROM TB_USER";
-//		List<Map<String, Object>> userList = jdbcTemplate.queryForList(query);  
-		
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		String encodedPw = encoder.encode("1");
-		
-		SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_MANAGER");
-		ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>(); 
-		authorities.add(authority); 
-		
-		UserDetails user = new CommunityUser(username, encodedPw , authorities);
-		 
-		log.info(":: user : " + JsonHelper.Obj2Json(user));
-		
-		return user;
+		try {
+			// db에서 사용자 정보 조회하는 로직 
+//			String query = " SELECT * FROM TB_USER";
+//			List<Map<String, Object>> userList = jdbcTemplate.queryForList(query);
+			
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			String encodedPw = encoder.encode("1"); // 비밀번호 1로 박아놓기
+			
+			SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_MANAGER");
+			ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>(); 
+			authorities.add(authority); 
+			
+			UserDetails user = new CommunityUser(username, encodedPw , authorities);
+			 
+			log.info(":: user : " + user);
+			
+			return user;
+		} catch(UsernameNotFoundException e) {
+			throw new UsernameNotFoundException("username not found");
+		}
 	}
 
 }

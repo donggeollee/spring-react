@@ -25,42 +25,28 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 public class CommunityAuthenticationProvider extends DaoAuthenticationProvider {
 	
+//	@Autowired
+//	@Qualifier("userManager")
+//	private UserManager userManager;	
+//	
+//	@Autowired(required = false)
+//	@Qualifier("eventBus")
+//	private EventBus eventBus;
+//	
+//	private ApplicationEventPublisher applicationEventPublisher;	
+//	
+//	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+//		this.applicationEventPublisher = applicationEventPublisher;
+//	}
+	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Override
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
 			UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
 		logger.info("===================additionalAuthenticationChecks=====================");
-		super.additionalAuthenticationChecks(userDetails, authentication);
-	}
-	
-	@Override
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		logger.info("===================authenticate=====================");
-		logger.info(":: authentication.getPrincipal() : " + authentication.getPrincipal());
-		logger.info(":: authentication.getCredentials() : " + authentication.getCredentials());
+		 
 		
-		authentication 객체에 ajax 요청의 로그인 정보가 안 담기는 문제....spring security ajax 인증 어떻게 함?
-		
-		return super.authenticate(authentication);
-	}
-	
-//	@Autowired
-//	@Qualifier("userManager")
-//	private UserManager userManager;	
-//	
-////	@Autowired(required = false)
-////	@Qualifier("eventBus")
-////	private EventBus eventBus;
-//	
-////	private ApplicationEventPublisher applicationEventPublisher;	
-////	
-////	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-////		this.applicationEventPublisher = applicationEventPublisher;
-////	}
-//	
-//	protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-//
 //		if (authentication.getCredentials() == null) {
 //			throw new BadCredentialsException("BadCredentialException Publish"); 
 //		}
@@ -73,25 +59,25 @@ public class CommunityAuthenticationProvider extends DaoAuthenticationProvider {
 //				logger.debug("This is external : {}. Auth not supported yet for external users.", user.getUsername() ); 
 //			}
 //			
-////			UserActivityEvent event = new UserActivityEvent(this, user.getUser(), UserActivityEvent.ACTIVITY.SIGNIN );
-////			if(applicationEventPublisher!= null) {
-////				applicationEventPublisher.publishEvent( event );
-////			}
-////			
-////			if(eventBus!=null){
-////				eventBus.post(event);
-////			}
+//			UserActivityEvent event = new UserActivityEvent(this, user.getUser(), UserActivityEvent.ACTIVITY.SIGNIN );
+//			if(applicationEventPublisher!= null) {
+//				applicationEventPublisher.publishEvent( event );
+//			}
+//			
+//			if(eventBus!=null){
+//				eventBus.post(event);
+//			}
 //		} catch (Exception e) {
-////		    logger.error(CommunityLogLocalizer.getMessage("010102"), e);
+//		    logger.error(CommunityLogLocalizer.getMessage("010102"), e);
 //			logger.info("Bad credentials");
 //		    throw new BadCredentialsException( messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
 //		} 
 //		logger.debug("additional authentication checks");
-//		super.additionalAuthenticationChecks(userDetails, authentication); 
-//	}
-//	
-//	private void checkLicense ( String username ) {
-//		
-//		
-//	}
+//		super.additionalAuthenticationChecks(userDetails, authentication);
+	} 
+	
+	private void checkLicense ( String username ) {
+		
+		
+	}
 }
