@@ -33,9 +33,9 @@
 	
 	<beans:bean id="requestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache" />
 	
-	<http auto-config="false" use-expressions="true" disable-url-rewriting="true" >
+	<http auto-config="false" use-expressions="true" disable-url-rewriting="true" create-session="stateless">
 	
-<!-- 		<cors configuration-source-ref="corsSource"/>  -->
+		<cors configuration-source-ref="corsSource"/> 
 	
 <!-- 		<headers> -->
 <!-- 			<frame-options policy="SAMEORIGIN" /> -->
@@ -61,7 +61,9 @@
 		<http-basic />
 		
 		<custom-filter before="BASIC_AUTH_FILTER" ref="jwtFilter"/>
-		<custom-filter position="FORM_LOGIN_FILTER" ref="asyncRequestAuthenticationFilter" />   
+		<custom-filter position="FORM_LOGIN_FILTER" ref="jwtRequestAuthenticationFilter" />
+<!-- 		REST API 인증 필터 -->
+<!-- 		<custom-filter position="FORM_LOGIN_FILTER" ref="asyncRequestAuthenticationFilter" />    --> 
 
 		<!-- Logout URL Setting  -->
         <logout invalidate-session="true" logout-url="/accounts/logout" logout-success-url="/" delete-cookies="JSESSIONID" />
@@ -72,10 +74,10 @@
  
         <anonymous enabled="true" username="ANONYMOUS" />        
         
-        <!-- 중복 로그인 방지 설정 -->
-        <session-management session-fixation-protection="newSession" >
-			<concurrency-control max-sessions="1" expired-url="/error/login_duplicate"/>
-        </session-management>
+        <!-- 중복 로그인 방지 설정 :: REST API 로 인증 시 사용 -->
+<!--         <session-management  session-fixation-protection="newSession" > -->
+<!-- 			<concurrency-control max-sessions="1" expired-url="/error/login_duplicate"/> -->
+<!--         </session-management> -->
         
         <!-- 접근 불허시 보여줄 페이지 설정 -->         
         <access-denied-handler error-page="/error/unauthorized" /><http-basic /><http-basic />
@@ -88,6 +90,15 @@
 	</authentication-manager>
 	
 	<beans:bean id="asyncRequestAuthenticationFilter" class="com.web.react.security.filter.AsyncRequestFilter"
+										p:filterProcessesUrl="/user/auth/login" 
+										p:authenticationManager-ref="authenticationManager"
+										p:usernameParameter="username" 
+										p:passwordParameter="password" 
+										p:authenticationSuccessHandler-ref="authenticationSuccessHandler"
+										p:authenticationFailureHandler-ref="authenticationFailureHandler"
+										 />
+										 
+ 	<beans:bean id="jwtRequestAuthenticationFilter" class="com.web.react.security.filter.JwtRequestFilter"
 										p:filterProcessesUrl="/user/auth/login" 
 										p:authenticationManager-ref="authenticationManager"
 										p:usernameParameter="username" 

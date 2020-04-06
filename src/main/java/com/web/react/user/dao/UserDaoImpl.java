@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,8 @@ import com.web.react.user.model.CommunityUser;
 import com.web.react.utils.DAOUtils;
 import com.web.react.utils.JsonHelper;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Repository
@@ -33,27 +36,31 @@ public class UserDaoImpl implements UserDao{
 		String query  = "SELECT ID, USERNAME, NICKNAME, CREATEDAT, UPDATEDAT FROM USERS WHERE USERNAME = ?";
 		
 		CommunityUser user = null; 
-//		
-//		try {
-//			List<Map<String,Object>> userList = jdbcTemplate.queryForList(query);
-//			
-//			if ( !userList.isEmpty() ) {
-//				Map<String, Object> tempUser = userList.get(0);
-//				
-//				user = new CommunityUser(tempUser.get("USERNAME").toString(), "", authorities);
-//				
-//				user.setNickname(tempUser.get("NICKNAME").toString());
-//			}
-//			
-//			
-//			
-//		} catch(Exception e) {
-//			log.error(e.getMessage());
-//		}
-//	 
-//		if ( user != null ) 
-//			log.info(user.getUsername());
-//		
+		
+		try {
+			Object[] params = new Object[] { username };
+			int[] types = new int[] { Types.VARCHAR };
+			log.info(username);
+			List<Map<String,Object>> userList = jdbcTemplate.queryForList(query, params, types);
+			
+			
+			if ( !userList.isEmpty() ) {
+				Map<String, Object> tempUser = userList.get(0);
+				
+				ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+				authorities.add(new SimpleGrantedAuthority("ROLE_MANAGER"));
+				
+				user = new CommunityUser(tempUser.get("USERNAME").toString(), tempUser.get("PASSWORD").toString(), authorities);
+				
+				user.setNickname(tempUser.get("NICKNAME").toString());
+			}
+		} catch(Exception e) {
+			log.error(e.getMessage());
+		}
+	 
+		if ( user != null ) 
+			log.info(user.getUsername());
+		
 		return user;
 	}
 

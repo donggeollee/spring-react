@@ -99,7 +99,7 @@ public class UserController {
 	@ResponseBody
 	@PostMapping("/login")
 	public Object login(@RequestBody String userLoginInfo) {
-		log.debug("userLoginInfo : "+JsonHelper.Obj2Json(userLoginInfo));
+		log.debug("userLoginInfo : "+userLoginInfo);
 		// 암호일치여부 확인 용도
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		
@@ -109,14 +109,17 @@ public class UserController {
 		
 		try {
 			CommunityUser user = userDaoImpl.selectUserByUsername(loginUser.get("username").toString());
+			log.debug("user : "+user); 
 			
 			// 계정 존재 여부
 			if( user == null ) {
 				result.setSuccess(false);
 			}
 			
+			String inputPassoword = loginUser.get("password") != null ? "" : loginUser.get("password").toString();
+			
 			// 비밀번호 일치여부
-			if ( !encoder.matches(loginUser.get("password").toString(), user.getPassword()) ) {
+			if ( !encoder.matches(inputPassoword, user.getPassword()) ) {
 				result.setSuccess(false);
 			}
 			

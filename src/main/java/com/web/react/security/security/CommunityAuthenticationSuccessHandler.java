@@ -15,44 +15,52 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
+import com.web.react.security.authentication.JwtTokenProvider;
 import com.web.react.utils.Result;
 import com.web.react.utils.ServletUtils;
 import com.web.react.utils.StringUtils;
 
+import jdk.internal.org.jline.utils.Log;
+
 public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	RequestCache requestCache;
+
+	@Autowired
+	JwtTokenProvider jwtTokenProvider;
 	
 	@Override
 	public void onAuthenticationSuccess( HttpServletRequest request, 
 										 HttpServletResponse response,
 										 Authentication authentication) throws IOException, ServletException {
-		logger.info("==============onAuthenticationSuccess===============");
+		log.info("==============onAuthenticationSuccess===============");
 		
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
 		
 		if( savedRequest == null ) {
-			logger.info("savedRequest is null");
+			log.info("savedRequest is null");
 		} else { 
-			logger.info("savedRequest is not null");
+			log.info("savedRequest is not null");
 		}
 		
-		if( request.getHeader(HttpHeaders.CONTENT_TYPE).equals(ContentType.APPLICATION_JSON.getMimeType()) ) {
-			logger.info("handle json Request");
+		if( request.getHeader(HttpHeaders.CONTENT_TYPE).contains(ContentType.APPLICATION_JSON.getMimeType()) ) {
+			log.info("handle json Request");
 			handleJsonRequest(request, response, authentication);
 		} else {
-			logger.info("handle normal Request");
+			log.info("handle normal Request");
 			super.onAuthenticationSuccess(request, response, authentication);
 		}
+		
 	}
 	
 	
@@ -135,6 +143,16 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 //	
 	protected void handleJsonRequest(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException{
 		Result result = Result.newResult();
+		
+		// JWT 로그인 요청 -> authToken 반환
+		String authToken = null;
+		log.info("authentication.getDetails() : {}",authentication.getDetails());
+
+		String jwtToken = jwtTokenProvider.createToken(authentication);
+		log.info("jwtToken : {}",jwtToken);
+		log.info("respone jwtToken : " + jwtToken);
+		result.getData().put("authToken", jwtToken);
+		
 		result.getData().put("success", true);
 		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));		
 		String referer = request.getHeader("Referer");		

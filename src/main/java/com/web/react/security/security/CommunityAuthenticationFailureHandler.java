@@ -34,7 +34,7 @@ public class CommunityAuthenticationFailureHandler extends SimpleUrlAuthenticati
 		logger.info("================onAuthenticationFailure=====================");
 		logger.info("ContentType.APPLICATION_JSON.toString() : {}",ContentType.APPLICATION_JSON);
 		
-		if( request.getHeader(HttpHeaders.CONTENT_TYPE).equals(ContentType.APPLICATION_JSON.getMimeType()) ) {
+		if( request.getHeader(HttpHeaders.CONTENT_TYPE).contains(ContentType.APPLICATION_JSON.getMimeType()) ) {
 			logger.debug("handle json request");
 			handleJsonRequest(request, response, exception); 
 		} else {
