@@ -2,6 +2,7 @@ package com.web.react.security.security;
 
 import java.io.IOException;
 
+
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -26,8 +27,6 @@ import com.web.react.security.authentication.JwtTokenProvider;
 import com.web.react.utils.Result;
 import com.web.react.utils.ServletUtils;
 import com.web.react.utils.StringUtils;
-
-import jdk.internal.org.jline.utils.Log;
 
 public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 

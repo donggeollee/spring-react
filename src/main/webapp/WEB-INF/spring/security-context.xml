@@ -89,7 +89,7 @@
 		<authentication-provider ref="authenticationProvider" />
 	</authentication-manager>
 	
-	<beans:bean id="asyncRequestAuthenticationFilter" class="com.web.react.security.filter.AsyncRequestFilter"
+	<beans:bean id="asyncRequestAuthenticationFilter" class="com.web.react.security.filter.AsyncRequestAuthenticationFilter"
 										p:filterProcessesUrl="/user/auth/login" 
 										p:authenticationManager-ref="authenticationManager"
 										p:usernameParameter="username" 
@@ -98,7 +98,7 @@
 										p:authenticationFailureHandler-ref="authenticationFailureHandler"
 										 />
 										 
- 	<beans:bean id="jwtRequestAuthenticationFilter" class="com.web.react.security.filter.JwtRequestFilter"
+ 	<beans:bean id="jwtRequestAuthenticationFilter" class="com.web.react.security.filter.JwtRequestAuthenticationFilter"
 										p:filterProcessesUrl="/user/auth/login" 
 										p:authenticationManager-ref="authenticationManager"
 										p:usernameParameter="username" 
