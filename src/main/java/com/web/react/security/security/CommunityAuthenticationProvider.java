@@ -14,6 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
+import com.web.react.user.model.CommunityUser;
+
 // import com.web.react.user.UserManager;
 
 // import com.google.common.eventbus.EventBus;
@@ -50,6 +52,14 @@ public class CommunityAuthenticationProvider extends DaoAuthenticationProvider {
 			throw new BadCredentialsException("BadCredentialException Publish"); 
 		}
 		
+		CommunityUser cuser = null;
+		if (userDetails instanceof CommunityUser) {
+			log.info("userDetails's type is CommunityUser");
+			cuser = (CommunityUser)userDetails;
+			log.info("cuser.getNickname() : {}",cuser.getNickname());
+		}
+		
+		authentication.setDetails(cuser);
 		super.additionalAuthenticationChecks(userDetails, authentication);
 	} 
 	
@@ -97,4 +107,5 @@ public class CommunityAuthenticationProvider extends DaoAuthenticationProvider {
 		
 		
 	}
+
 }

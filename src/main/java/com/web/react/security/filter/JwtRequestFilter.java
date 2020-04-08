@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.react.utils.StringUtils;
 
-public class JwtRequestAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
+public class JwtRequestFilter extends UsernamePasswordAuthenticationFilter{
 
 	Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -34,7 +34,7 @@ public class JwtRequestAuthenticationFilter extends UsernamePasswordAuthenticati
 	private String usernameParameter;
 	private String passwordParameter;
 	
-	public JwtRequestAuthenticationFilter() {
+	public JwtRequestFilter() {
 		log.info("JwtRequestFilter 객체 생성");
 		this.mapper = new ObjectMapper();
 		usernameParameter = super.getUsernameParameter();

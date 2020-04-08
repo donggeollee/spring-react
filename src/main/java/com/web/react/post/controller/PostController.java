@@ -45,8 +45,8 @@ public class PostController {
 		
 		log.info("postInfo : " + JsonHelper.Obj2Json(postInfo));
 		Post post = new Post();
-		post.setUserId(Integer.parseInt(postInfo.get("userId").toString()));
-		post.setContent(postInfo.get("content").toString());
+		post.setUserId(Integer.parseInt(postInfo.get("USERNAME").toString()));
+		post.setContent(postInfo.get("CONTENT").toString());
 		
 		return postDAO.createPost(post);
 	} 

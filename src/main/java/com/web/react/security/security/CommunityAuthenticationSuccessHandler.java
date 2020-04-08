@@ -2,7 +2,6 @@ package com.web.react.security.security;
 
 import java.io.IOException;
 
-
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -16,17 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.web.react.security.authentication.JwtTokenProvider;
+import com.web.react.user.model.CommunityUser;
 import com.web.react.utils.Result;
 import com.web.react.utils.ServletUtils;
 import com.web.react.utils.StringUtils;
+
 
 public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
@@ -45,7 +44,7 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 		log.info("==============onAuthenticationSuccess===============");
 		
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
-
+		
 		if( savedRequest == null ) {
 			log.info("savedRequest is null");
 		} else { 
@@ -148,17 +147,20 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 		log.info("authentication.getDetails() : {}",authentication.getDetails());
 
 		String jwtToken = jwtTokenProvider.createToken(authentication);
-		log.info("jwtToken : {}",jwtToken);
-		log.info("respone jwtToken : " + jwtToken);
 		result.getData().put("authToken", jwtToken);
-		
 		result.getData().put("success", true);
-		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));		
+		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));
+		if( authentication.getPrincipal() instanceof CommunityUser ) {
+			CommunityUser temp = (CommunityUser)authentication.getPrincipal();
+			temp.setPassword("");
+			result.getData().put("loginInfo",temp);
+		}
+		
 		String referer = request.getHeader("Referer");		
 		if (StringUtils.isNullOrEmpty(referer))
 			result.getData().put("referer", referer);
 		
-		Map<String, Object> model = new ModelMap();
+		Map<String, Object> model = new ModelMap(); 
 		model.put("item", result);
 		try {
 			createJsonViewAndRender(model, request, response);
@@ -175,3 +177,4 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 	}
 
 }
+

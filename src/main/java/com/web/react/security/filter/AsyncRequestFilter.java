@@ -1,29 +1,39 @@
 package com.web.react.security.filter;
 
 import java.io.IOException;
-import org.apache.http.HttpHeaders;
+
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.savedrequest.Enumerator;
 import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.web.react.security.authentication.JwtTokenProvider;
+import com.web.react.utils.ServletUtils;
 import com.web.react.utils.StringUtils;
 
-public class JwtRequestAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
+public class AsyncRequestFilter extends UsernamePasswordAuthenticationFilter{
 
 	Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -34,8 +44,8 @@ public class JwtRequestAuthenticationFilter extends UsernamePasswordAuthenticati
 	private String usernameParameter;
 	private String passwordParameter;
 	
-	public JwtRequestAuthenticationFilter() {
-		log.info("JwtRequestFilter 객체 생성");
+	public AsyncRequestFilter() {
+		log.info("AsyncRequestFilter 객체 생성");
 		this.mapper = new ObjectMapper();
 		usernameParameter = super.getUsernameParameter();
 		passwordParameter = super.getPasswordParameter();
@@ -51,12 +61,13 @@ public class JwtRequestAuthenticationFilter extends UsernamePasswordAuthenticati
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
 		
+		// POST 방식만 인증 가능
 		if ( postOnly && !request.getMethod().equals("POST")) {
 			log.info("Authentication method not supported : " + request.getMethod());
 			throw new AuthenticationServiceException("Authentication method not supported : " + request.getMethod());
 		}
 		
-		// 요청이  application/json 타입이면 requestBody 꺼내오기
+		// 요청이  application/json 타입이면 requestBody 꺼내옴
 		if ( request.getHeader("Content-Type").contains(ContentType.APPLICATION_JSON.getMimeType()) ) {
 			log.info("request's content-type is application/json ");
 			
@@ -78,10 +89,11 @@ public class JwtRequestAuthenticationFilter extends UsernamePasswordAuthenticati
 		if( StringUtils.isNullOrEmpty(password)) password = "";
 		username = username.trim(); 
 		
+		// Authentication 객체 생성
 		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
 		
 		// JWT 로그인 요청이면 토큰 발급
-		String headerAuthorization = request.getHeader(org.apache.http.HttpHeaders.AUTHORIZATION);
+		String headerAuthorization = request.getHeader("Authorization");
 		if ( !StringUtils.isNullOrEmpty(headerAuthorization) && headerAuthorization.contains("loginRequest") ) {
 			log.info("this is Jwt request. Authentication's detail will take \"JWT_REQUEST\" to success or failure handler");
 		}

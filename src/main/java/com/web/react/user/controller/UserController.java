@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.web.react.security.authentication.JWTFilter;
+import com.web.react.security.authentication.JwtTokenProvider;
 import com.web.react.security.security.CommunityUserDetailsService;
 import com.web.react.user.dao.UserDao;
 import com.web.react.user.model.CommunityUser;
@@ -41,6 +44,9 @@ public class UserController {
 	
 	@Autowired
 	UserDao userDaoImpl;
+	
+	@Autowired
+	JwtTokenProvider jwtTokenProvider;
 	
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET , value = "/")
@@ -139,25 +145,24 @@ public class UserController {
 	}
 	
 	@ResponseBody
-	@PostMapping("/auth/login_test")
-	public Object statefulLogin(@RequestBody String userLoginInfo) {
-		log.info("login Controller 도착");
-		log.info("userLoginInfo : " + userLoginInfo);
+	@PostMapping("/auth/load")
+	public Object loadUser(@RequestBody String jwtToken) { 
+		log.info("load Controller 도착");
+		log.info("jwtToken : " + jwtToken);
 		
-		Map<String, Object> loginInfo = ParamUtils.jsonFormatStringToJavaObject(userLoginInfo, Map.class);
-		String principal = loginInfo.get("username") != null ? loginInfo.get("username").toString() : "";
-		String credential = loginInfo.get("username") != null ? loginInfo.get("password").toString() : "";
+		Result result = Result.newResult();
 		
-//		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//		
-//		UserDetailsService userDetailsService = new CommunityUserDetailsService(); 
-//		UserDetails user = (CommunityUser)userDetailsService.loadUserByUsername(principal); 
-//		UsernamePasswordAuthenticationToken loginToken = null;
-//		if (encoder.matches(credential, user.getPassword())) {
-//			loginToken = new UsernamePasswordAuthenticationToken(user.getUsername(), "", user.getAuthorities());
-//		}
-//		SecurityContextHolder.getContext().setAuthentication(loginToken);
-		
-		return 'Y';
+		try {
+			if (jwtTokenProvider.validateToken(jwtToken)) {
+				Authentication loadedUser = jwtTokenProvider.getAuthentication(jwtToken);
+				result.getData().put("loadedUser", loadedUser);
+			}
+			result.setSuccess(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setError(e);
+		}
+	
+		return result;
 	}
 }
