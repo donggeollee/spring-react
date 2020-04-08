@@ -45,7 +45,7 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 		log.info("==============onAuthenticationSuccess===============");
 		
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
-		
+
 		if( savedRequest == null ) {
 			log.info("savedRequest is null");
 		} else { 
