@@ -4,7 +4,6 @@ import org.springframework.stereotype.Repository;
 
 import com.web.react.user.model.CommunityUser;
 
-@Repository
 public interface UserDao { 
 	
 	CommunityUser selectUserByUsername(String username);

@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.web.react.user.dao.UserDao;
 import com.web.react.user.model.CommunityUser;
 import com.web.react.utils.JsonHelper;
 
@@ -21,7 +22,7 @@ public class CommunityUserDetailsService implements UserDetailsService{
 	Logger log = LoggerFactory.getLogger(getClass());
  
 	@Autowired
-	JdbcTemplate jdbcTemplate;
+	UserDao userDao;
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -29,22 +30,7 @@ public class CommunityUserDetailsService implements UserDetailsService{
 		log.info(":: username : " + username);
 		
 		try {
-			// db에서 사용자 정보 조회하는 로직 
-//			String query = " SELECT * FROM TB_USER";
-//			List<Map<String, Object>> userList = jdbcTemplate.queryForList(query);
-			
-			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-			String encodedPw = encoder.encode("1"); // 비밀번호 1로 박아놓기
-			
-			SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_MANAGER");
-			ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>(); 
-			authorities.add(authority); 
-			
-			UserDetails user = new CommunityUser(username, encodedPw , authorities);
-			 
-			log.info(":: user : " + user);
-			
-			return user;
+			return userDao.selectUserByUsername(username);
 		} catch(UsernameNotFoundException e) {
 			throw new UsernameNotFoundException("username not found");
 		}

@@ -33,7 +33,7 @@ public class UserDaoImpl implements UserDao{
 
 	@Override
 	public CommunityUser selectUserByUsername(String username) {  
-		String query  = "SELECT ID, USERNAME, NICKNAME, CREATEDAT, UPDATEDAT FROM USERS WHERE USERNAME = ?";
+		String query  = "SELECT U.USERNAME, U.PASSWORD, U.NICKNAME, R.ROLE_NAME FROM USERS U, ROLE_MEMBERS M, ROLE R WHERE 1 = 1 AND U.ID = M.USER_ID AND M.ROLE_ID = R.ROLE_ID AND USERNAME = ?";
 		
 		CommunityUser user = null; 
 		
@@ -43,12 +43,11 @@ public class UserDaoImpl implements UserDao{
 			log.info(username);
 			List<Map<String,Object>> userList = jdbcTemplate.queryForList(query, params, types);
 			
-			
 			if ( !userList.isEmpty() ) {
 				Map<String, Object> tempUser = userList.get(0);
 				
 				ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-				authorities.add(new SimpleGrantedAuthority("ROLE_MANAGER"));
+				authorities.add(new SimpleGrantedAuthority(tempUser.get("ROLE_NAME").toString()));
 				
 				user = new CommunityUser(tempUser.get("USERNAME").toString(), tempUser.get("PASSWORD").toString(), authorities);
 				
@@ -57,9 +56,6 @@ public class UserDaoImpl implements UserDao{
 		} catch(Exception e) {
 			log.error(e.getMessage());
 		}
-	 
-		if ( user != null ) 
-			log.info(user.getUsername());
 		
 		return user;
 	}

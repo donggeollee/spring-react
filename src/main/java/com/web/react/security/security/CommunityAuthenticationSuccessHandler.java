@@ -23,6 +23,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.web.react.security.authentication.JwtTokenProvider;
+import com.web.react.user.model.CommunityUser;
 import com.web.react.utils.Result;
 import com.web.react.utils.ServletUtils;
 import com.web.react.utils.StringUtils;
@@ -149,12 +150,15 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 		log.info("authentication.getDetails() : {}",authentication.getDetails());
 
 		String jwtToken = jwtTokenProvider.createToken(authentication);
-		log.info("jwtToken : {}",jwtToken);
-		log.info("respone jwtToken : " + jwtToken);
 		result.getData().put("authToken", jwtToken);
-		
 		result.getData().put("success", true);
-		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));		
+		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));
+		if( authentication.getPrincipal() instanceof CommunityUser ) {
+			CommunityUser temp = (CommunityUser)authentication.getPrincipal();
+			temp.setPassword("");
+			result.getData().put("loginInfo",temp);
+		}
+		
 		String referer = request.getHeader("Referer");		
 		if (StringUtils.isNullOrEmpty(referer))
 			result.getData().put("referer", referer);
