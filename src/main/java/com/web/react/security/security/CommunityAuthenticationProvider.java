@@ -107,4 +107,5 @@ public class CommunityAuthenticationProvider extends DaoAuthenticationProvider {
 		
 		
 	}
+
 }

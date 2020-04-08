@@ -180,3 +180,4 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 	}
 
 }
+
