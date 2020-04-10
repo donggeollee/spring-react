@@ -89,15 +89,17 @@ public class UserController {
 	public Object signUp(@RequestBody String signUpInfo) {
 		
 		Map<String, Object> signUpUser = ParamUtils.jsonFormatStringToJavaObject(signUpInfo, Map.class);
-		log.info("signupUser => ");
-		log.info(""+JsonHelper.Obj2Json(signUpUser));
-		CommunityUser signupSuccessUser = null;
+		List<Map<String,Object>> signupSuccessUser = Collections.EMPTY_LIST;
 		if ( signUpUser.keySet().size() > 0 ) {
 			signupSuccessUser = userDaoImpl.insertUser(0, signUpUser.get("username").toString(), 
 									  signUpUser.get("password").toString(), 
 									  signUpUser.get("nickname").toString());
 		}
-		signupSuccessUser.setPassword(""); 
+		
+		if( !signupSuccessUser.isEmpty() ) {
+			signupSuccessUser.get(0).put("PASSWORD", ""); 
+		}
+		
 		return signupSuccessUser;
 	}
 	
@@ -105,7 +107,7 @@ public class UserController {
 	@ResponseBody
 	@PostMapping("/login")
 	public Object login(@RequestBody String userLoginInfo) {
-		log.debug("userLoginInfo : "+userLoginInfo);
+		log.debug("userLoginInfo : " + userLoginInfo);
 		// 암호일치여부 확인 용도
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		

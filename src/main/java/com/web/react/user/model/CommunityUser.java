@@ -15,7 +15,7 @@ public class CommunityUser extends User{
 	private int id;
 	private String username;
 	private String password;
-	private String nickname;
+	private String nickname; 
 	private Date createdAt;
 	private Date updatedAt;
 	private ArrayList<SimpleGrantedAuthority> authorities;

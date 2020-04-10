@@ -30,7 +30,7 @@ public class PostDAOImpl implements PostDAO{
 		
 		int nextId= getNextId("POSTS");
 		
-		String sql = "INSERT INTO POSTS VALUES (?,?,?,now(),now())";
+		String sql = "INSERT INTO POSTS VALUES ( ? , ? , ? , now() , now(), 'N' )";
 		
 		Object[] params = new Object[] { nextId, post.getUserId(),post.getContent() };
 		int[] types = new int[] {Types.INTEGER, Types.INTEGER, Types.VARCHAR };
@@ -41,7 +41,7 @@ public class PostDAOImpl implements PostDAO{
 		Map<String, Object> createdPost = null;
 		
 		if ( saveCount == 1 ) {
-			createdPost = jdbcTemplate.queryForMap("SELECT * FROM POSTS WHERE id = ?", nextId);
+			createdPost = jdbcTemplate.queryForMap("SELECT * FROM POSTS WHERE ID = ?", nextId);
 			log.info(JsonHelper.Obj2Json(createdPost) + "");
 		}
 		
@@ -50,9 +50,22 @@ public class PostDAOImpl implements PostDAO{
 
 	@Override
 	public Object readPostById(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		String sql = "SELECT * FROM POSTS WHERE ID = ?";
+		Object[] params = new Object[] { id };
+		int[] types = new int[] {Types.INTEGER};
+		List<Map<String, Object>> post = jdbcTemplate.queryForList(sql, params, types);
+		return post;
 	}
+	
+	@Override
+	public Object readPostsByUserId(int id) {
+		String sql = "SELECT * FROM POSTS WHERE USERID = ?";
+		Object[] params = new Object[] { id };
+		int[] types = new int[] {Types.INTEGER};
+		List<Map<String, Object>> posts = jdbcTemplate.queryForList(sql, params, types);
+		return posts;
+	}
+
 
 	@Override
 	public Object readPostAll() {
@@ -69,8 +82,13 @@ public class PostDAOImpl implements PostDAO{
 
 	@Override
 	public int deletePost(int id) {
-		// TODO Auto-generated method stub
-		return 0;
+		String sql = "UPDATE POSTS SET del_yn = 'Y' WHERE id = ?";
+		
+		Object[] params = new Object[] { id };
+		int[] types = new int[] {Types.INTEGER };
+		int saveCount = jdbcTemplate.update(sql, params, types);
+		
+		return saveCount;
 	}
 	
 	public int getNextId(String table) {
@@ -78,6 +96,7 @@ public class PostDAOImpl implements PostDAO{
 		return jdbcTemplate.queryForObject(query, int.class);
 	}
 
+	
 	
 	
 }

@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.web.react.user.model.CommunityUser;
 import com.web.react.utils.DAOUtils;
@@ -61,46 +65,51 @@ public class UserDaoImpl implements UserDao{
 	}
 
 	@Override
-	public CommunityUser insertUser(int id, String username, String password, String nickname) {
+	@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
+	public List<Map<String,Object>> insertUser(int id, String username, String password, String nickname) {
 
-		int nextId = getNextId("USERS");
-		String query = "INSERT INTO USERS (ID, USERNAME, PASSWORD, NICKNAME, CREATEDAT, UPDATEDAT ) VALUES( ?, ?, ?, ?, now(),now() )";
 		
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		String hashingPassword = encoder.encode(password);
-		
-		int saveCount = jdbcTemplate.update(query
-				, new Object[] { nextId, username, hashingPassword, nickname }
-				, new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,});
-		
-		log.info("================= signup Info =================");
-		log.info("nextId : " + nextId);
-		log.info("username : " + username);
-		log.info("password : " + hashingPassword);
-		log.info("nickname : " + nickname);
-		
-		CommunityUser user = null; 
-		if( saveCount == 1 ) {
-			String query2 = "SELECT ID, USERNAME, PASSWORD, NICKNAME, CREATEDAT, UPDATEDAT FROM USERS WHERE ID = ? ";
-//			try {
-//				user = jdbcTemplate.queryForObject(query2, new RowMapper<CommunityUser>() {
-//					@Override
-//					public CommunityUser mapRow(ResultSet rs, int rowNum) throws SQLException {
-//						CommunityUser user = new CommunityUser(   rs.getInt(1) 
-//																, rs.getString(2)
-//																, rs.getString(3)
-//																, rs.getString(4)
-//																, rs.getDate(5)
-//																, rs.getDate(6)
-//															);
-//						return user;
-//					}
-//				}, nextId);
-//			} catch(Exception e) {
-//				log.error(e.getLocalizedMessage());
-//			}
+		List<Map<String, Object >> user = Collections.EMPTY_LIST;
+		try {
+			jdbcTemplate.getDataSource().getConnection().setAutoCommit(false);
+			// 사용자 순번 가져오기
+			int nextId = getNextId("USERS");
+			
+			// 사용자 테이블 데이터 추가
+			String userInsertQuery = "INSERT INTO USERS (ID, USERNAME, PASSWORD, NICKNAME, CREATEDAT, UPDATEDAT ) VALUES( ?, ?, ?, ?, now(),now() )";
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			String hashingPassword = encoder.encode(password);
+			
+			int userInsertCount = jdbcTemplate.update(userInsertQuery
+					, new Object[] { nextId, username, hashingPassword, nickname }
+					, new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,}); 
+			
+			log.info("================= signup Info =================");
+			log.info("nextId : " + nextId);
+			log.info("username : " + username);
+			log.info("password : " + hashingPassword);
+			log.info("nickname : " + nickname);
+			
+			// 새로운 사용자 권한 추가
+			String roleInsertQuery = "INSERT INTO ROLE_MEMBERS ( ROLE_ID, USER_ID ) VALUES ( 3, ? )";
+			int roleInsertCount = jdbcTemplate.update(userInsertQuery , new Object[] { nextId } , new int[] { Types.VARCHAR });
+			
+			// 회원가입 사용자 정보 불러오기
+			if( userInsertCount == 1 && roleInsertCount == 1) {
+				String query2 = "SELECT USERNAME, PASSWORD, NICKNAME, ROLE_NAME FROM USERS U, ROLE_MEMBERS M, ROLE R WHERE 1 = 1 AND U.ID = M.USER_ID AND M.ROLE_ID = M.ROLE_ID AND U.ID = ?";
+				user = jdbcTemplate.queryForList( query2, new Object[] {nextId}, new int[] {Types.VARCHAR} );
+				log.info("Signup success user : " + JsonHelper.Obj2Json(user));
+			}
+		} catch( Exception e) {
+			e.printStackTrace();
+			try {
+				jdbcTemplate.getDataSource().getConnection().rollback();
+				jdbcTemplate.getDataSource().getConnection().setAutoCommit(true);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		}
-		log.info("Signup success user : " + JsonHelper.Obj2Json(user));
+		
 		return user;
 	} 
 	

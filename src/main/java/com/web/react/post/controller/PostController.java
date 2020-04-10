@@ -58,7 +58,6 @@ public class PostController {
 		
 		Result result = Result.newResult();
 		try {
-			
 			List<Map<String,Object>> postList = ((List<Map<String,Object>>)postDAO.readPostAll());
 			
 			if ( postList.isEmpty() ) {
@@ -66,11 +65,9 @@ public class PostController {
 			} else {
 				result.getData().put("posts", postList);
 			}
-			
 		} catch(Exception e) {
 			result.setError(e);
 		}
-		log.info(JsonHelper.Obj2Json(result.getData()) + "");
 		return result;
 	}
 }

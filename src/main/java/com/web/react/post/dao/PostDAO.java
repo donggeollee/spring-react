@@ -10,6 +10,8 @@ public interface PostDAO {
 	
 	public Object readPostById(int id);
 	
+	public Object readPostsByUserId(int id);
+	
 	public Object readPostAll();
 	
 	public int updatePost(Post post);
