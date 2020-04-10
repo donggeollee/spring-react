@@ -1,4 +1,4 @@
-package com.web.react.post.dao;
+package com.web.react.board.dao;
 
 import java.sql.Types;
 
