@@ -1,6 +1,7 @@
 package com.web.react.post.dao;
 
 import java.sql.Types;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -14,17 +15,31 @@ public class ReplyDAOImpl implements ReplyDAO {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 	
+	/**
+	 * 댓글 생성
+	 * @param postId, userId, reply
+	 * @return replyId
+	 */
 	@Override
 	public int createReply(int postId, int userId, String reply) {
-		String sql = "INSERT INTO REPLYS VALUES ( ?, ?, ?, ?, now(), now() )";
-		
+		String createSql = "INSERT INTO REPLYS VALUES ( ?, ?, ?, ?, now(), now() )";
 		int nextId = getNextId("REPLYS");
 		Object[] args = new Object[] { nextId, postId, userId, reply };
 		int[] types = new int[] { Types.VARCHAR, Types.VARCHAR,Types.VARCHAR,Types.VARCHAR };
 		
-		return jdbcTemplate.update(sql, args, types);
+		// 댓글 생성 성공시 replyId 리턴
+		if ( jdbcTemplate.update(createSql, args, types) == 1) {
+			return nextId;
+		} else {
+			return 0;
+		}
 	}
 
+	/**
+	 * 댓글 전체 조회
+	 * @param 
+	 * @return list
+	 */
 	@Override
 	public List<Map<String, Object>> readReply() {
 		String sql = "SELECT R.ID, R.POST_ID, R.USER_ID, U.NICKNAME, R.CREATEDAT, R.REPLY FROM REPLYS R, USERS U WHERE R.USER_ID = U.ID ORDER BY R.ID ";
@@ -32,9 +47,19 @@ public class ReplyDAOImpl implements ReplyDAO {
 		return list;  
 	}
 
+	/**
+	 * 댓글 조회 by replyId
+	 * @param replyId
+	 * @return list
+	 */
 	@Override
 	public List<Map<String, Object>> readReplyById(int replyId) {
-		return null;
+		String readSql = "SELECT R.ID, R.POST_ID, U.NICKNAME, U.USERNAME, R.REPLY, R.CREATEDAT,R.UPDATEDAT FROM REPLYS R, USERS U WHERE 1 = 1 AND R.USER_ID = U.ID AND R.ID = ?";
+		Object[] args = new Object[] { replyId };	
+		int[] types = new int[] { Types.VARCHAR }; 
+		List<Map<String, Object>> newReply = Collections.EMPTY_LIST;
+		newReply = jdbcTemplate.queryForList( readSql, args, types );
+		return newReply;
 	}
 	
 	@Override

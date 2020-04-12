@@ -72,7 +72,7 @@ public class JwtRequestAuthenticationFilter extends UsernamePasswordAuthenticati
 		String username = obtainUsername(request);
 		String password = obtainPassword(request);
 		
-		log.info("[LOGIN REQUEST] username : {} , password : {}]",username,password);
+		log.info("[LOGIN REQUEST] username : {} , password : {}",username,password);
 		
 		if( StringUtils.isNullOrEmpty(username)) username = "";
 		if( StringUtils.isNullOrEmpty(password)) password = "";

@@ -43,7 +43,16 @@ public class ReplyController {
 			int postId = createCommentInfo.get("POST_ID") != null ? Integer.parseInt(createCommentInfo.get("POST_ID").toString()) : 0 ;
 			int userId = createCommentInfo.get("USER_ID") != null ? Integer.parseInt(createCommentInfo.get("USER_ID").toString()) : 0 ;
 			String comment = createCommentInfo.get("REPLY") != null ? createCommentInfo.get("REPLY").toString() : "";
-			result.getData().put("saveCount", replyDao.createReply(postId, userId, comment));
+			
+			// 댓글 삽입 => 조회
+			int newReplyId = replyDao.createReply(postId, userId, comment);
+			
+			if ( newReplyId == 0 ) {
+				result.setSuccess(false);
+			} else {
+				result.setSuccess(true);
+				result.getData().put("newReply", replyDao.readReplyById(newReplyId));
+			}
 		} catch(Exception e) {
 			result.setError(e);
 		}

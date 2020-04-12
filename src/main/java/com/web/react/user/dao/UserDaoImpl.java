@@ -57,6 +57,7 @@ public class UserDaoImpl implements UserDao{
 				
 				user.setNickname(tempUser.get("NICKNAME").toString());
 			}
+			log.info("seleceUserByUsername : {}", user);
 		} catch(Exception e) {
 			log.error(e.getMessage());
 		}
@@ -65,13 +66,12 @@ public class UserDaoImpl implements UserDao{
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
 	public List<Map<String,Object>> insertUser(int id, String username, String password, String nickname) {
 
 		
 		List<Map<String, Object >> user = Collections.EMPTY_LIST;
 		try {
-			jdbcTemplate.getDataSource().getConnection().setAutoCommit(false);
+			
 			// 사용자 순번 가져오기
 			int nextId = getNextId("USERS");
 			
@@ -82,7 +82,7 @@ public class UserDaoImpl implements UserDao{
 			
 			int userInsertCount = jdbcTemplate.update(userInsertQuery
 					, new Object[] { nextId, username, hashingPassword, nickname }
-					, new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,}); 
+					, new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR }); 
 			
 			log.info("================= signup Info =================");
 			log.info("nextId : " + nextId);
@@ -92,7 +92,7 @@ public class UserDaoImpl implements UserDao{
 			
 			// 새로운 사용자 권한 추가
 			String roleInsertQuery = "INSERT INTO ROLE_MEMBERS ( ROLE_ID, USER_ID ) VALUES ( 3, ? )";
-			int roleInsertCount = jdbcTemplate.update(userInsertQuery , new Object[] { nextId } , new int[] { Types.VARCHAR });
+			int roleInsertCount = jdbcTemplate.update(roleInsertQuery , new Object[] { nextId } , new int[] { Types.VARCHAR });
 			
 			// 회원가입 사용자 정보 불러오기
 			if( userInsertCount == 1 && roleInsertCount == 1) {
@@ -102,14 +102,7 @@ public class UserDaoImpl implements UserDao{
 			}
 		} catch( Exception e) {
 			e.printStackTrace();
-			try {
-				jdbcTemplate.getDataSource().getConnection().rollback();
-				jdbcTemplate.getDataSource().getConnection().setAutoCommit(true);
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-		}
-		
+		} 
 		return user;
 	} 
 	
