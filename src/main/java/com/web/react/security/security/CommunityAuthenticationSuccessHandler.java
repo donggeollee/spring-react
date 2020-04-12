@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.ui.ModelMap;
@@ -27,8 +25,6 @@ import com.web.react.user.model.CommunityUser;
 import com.web.react.utils.Result;
 import com.web.react.utils.ServletUtils;
 import com.web.react.utils.StringUtils;
-
-import jdk.internal.org.jline.utils.Log;
 
 public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
