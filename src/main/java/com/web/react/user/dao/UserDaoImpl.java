@@ -25,6 +25,7 @@ import com.web.react.utils.JsonHelper;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Repository
@@ -41,26 +42,24 @@ public class UserDaoImpl implements UserDao{
 		
 		CommunityUser user = null; 
 		
-		try {
-			Object[] params = new Object[] { username };
-			int[] types = new int[] { Types.VARCHAR };
-			log.info(username);
-			List<Map<String,Object>> userList = jdbcTemplate.queryForList(query, params, types);
+		Object[] params = new Object[] { username };
+		int[] types = new int[] { Types.VARCHAR };
+		List<Map<String,Object>> userList = jdbcTemplate.queryForList(query, params, types);
+		
+		if ( !userList.isEmpty() ) {
+			Map<String, Object> tempUser = userList.get(0);
 			
-			if ( !userList.isEmpty() ) {
-				Map<String, Object> tempUser = userList.get(0);
-				
-				ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-				authorities.add(new SimpleGrantedAuthority(tempUser.get("ROLE_NAME").toString()));
-				
-				user = new CommunityUser(tempUser.get("USERNAME").toString(), tempUser.get("PASSWORD").toString(), authorities);
-				
-				user.setNickname(tempUser.get("NICKNAME").toString());
-			}
-			log.info("seleceUserByUsername : {}", user);
-		} catch(Exception e) {
-			log.error(e.getMessage());
+			ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+			authorities.add(new SimpleGrantedAuthority(tempUser.get("ROLE_NAME").toString()));
+			
+			user = new CommunityUser(tempUser.get("USERNAME").toString(), tempUser.get("PASSWORD").toString(), authorities);
+			
+			user.setNickname(tempUser.get("NICKNAME").toString());
+		} else {
+			throw new UsernameNotFoundException("username not found"); 
 		}
+		
+		log.info("seleceUserByUsername : {}", user);
 		
 		return user;
 	}

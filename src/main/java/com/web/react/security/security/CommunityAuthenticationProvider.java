@@ -65,10 +65,10 @@ public class CommunityAuthenticationProvider extends DaoAuthenticationProvider {
 	
 	@Override
 		public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		log.info("===================authenticate=====================");
+			log.info("===================authenticate=====================");
 			return super.authenticate(authentication);
 		}
-	
+	 
 //	@Override
 //	protected void additionalAuthenticationChecks(UserDetails userDetails,
 //			UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
