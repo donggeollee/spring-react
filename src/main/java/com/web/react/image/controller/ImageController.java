@@ -19,8 +19,8 @@ public class ImageController {
 	
 	Logger log = LoggerFactory.getLogger(getClass());
 	
-//	@PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
-	@RequestMapping(value = "/create", method= RequestMethod.POST, headers = ("content-type=multipart/*"))
+	@PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
+//	@RequestMapping(value = "/create", method= RequestMethod.POST, headers = ("content-type=multipart/*"))
 	public Object createImage(@RequestParam("file") MultipartFile file) {
 		
 		log.debug("file : {}", file);
@@ -31,14 +31,9 @@ public class ImageController {
 		log.debug("file.getSize() : {}", file.getSize());
 		log.debug("file.getContentType() : {}", file.getContentType());
 		log.debug("file.getClass() : {}", file.getClass());
-		
+		 
 		return null;
 	}
-	
-//    public ResponseEntity uploadFile(@RequestParam MultipartFile file) {
-//        logger.info(String.format("File name '%s' uploaded successfully.", file.getOriginalFilename()));
-//        return ResponseEntity.ok().build();
-//    }
 	
 	@GetMapping("/readAll")
 	public Object readAllImage() {
@@ -54,13 +49,11 @@ public class ImageController {
 	
 	@PostMapping("/delete/{id}")
 	public Object deleteImage(@RequestBody String imageId, @PathVariable int id) {
-		
 		return null;
 	}
 	
 	@PostMapping("/delete")
 	public Object deleteImage(@RequestBody String imageFile) {
-		
 		return null;
 	}
 	

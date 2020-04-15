@@ -67,6 +67,7 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 //	@Override
 //	public void onAuthenticationSuccess(HttpServletRequest request,
 //			HttpServletResponse response, Authentication authentication)
+	
 //			throws ServletException, IOException {
 //		
 //		SavedRequest savedRequest = requestCache.getRequest(request, response);
