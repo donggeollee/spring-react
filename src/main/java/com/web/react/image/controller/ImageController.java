@@ -1,14 +1,17 @@
 package com.web.react.image.controller;
 
+import java.io.File;
+import java.util.ArrayList;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,25 +22,26 @@ public class ImageController {
 	
 	Logger log = LoggerFactory.getLogger(getClass());
 	
-	@PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
+//	@PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE )
 //	@RequestMapping(value = "/create", method= RequestMethod.POST, headers = ("content-type=multipart/*"))
-	public Object createImage(@RequestParam("file") MultipartFile file) {
+	@PostMapping(value = "/create")
+//	public Object createImage(MultipartHttpServletRequest request) {
+	public Object createImage(@RequestParam ArrayList<MultipartFile> files ) {
 		
-		log.debug("file : {}", file);
+		log.debug("files : {}", files);
 //		log.debug("file : {}", file.getBytes());
-		log.debug("file.getName() : {}", file.getName());
-		log.debug("file.getOriginalFilename() : {}", file.getOriginalFilename());
+//		log.debug("file.getName() : {}", file.getName());
+//		log.debug("file.getOriginalFilename() : {}", file.getOriginalFilename());
 //		log.debug("file : {}", file.getInputStream());
-		log.debug("file.getSize() : {}", file.getSize());
-		log.debug("file.getContentType() : {}", file.getContentType());
-		log.debug("file.getClass() : {}", file.getClass());
+//		log.debug("file.getSize() : {}", file.getSize());
+//		log.debug("file.getContentType() : {}", file.getContentType());
+//		log.debug("file.getClass() : {}", file.getClass());
 		 
 		return null;
 	}
 	
 	@GetMapping("/readAll")
-	public Object readAllImage() {
-		
+	public Object readAllImage(HttpServletRequest request) {
 		return null;
 	}
 	
