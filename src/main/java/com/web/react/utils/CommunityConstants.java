@@ -64,7 +64,7 @@ public class CommunityConstants {
 	public enum Platform {
 		
 		WINDOWS(';'), UNIX(':');
-		public final char pathSeparator;
+		public final char pathSeparator; 
 		private Platform(char pathSeparator) {
 			this.pathSeparator = pathSeparator;
 		}
