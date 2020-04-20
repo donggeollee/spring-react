@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<task:scheduler id="scheduler" pool-size="2"/>
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="schedulerTaskClass" method="doJob" cron="1 * * * * *"/> 
+	</task:scheduled-tasks>
+	
+	<bean id="schedulerTaskClass" class="com.web.react.scheduler.SchedulerTaskClass"/>
+		
+</beans>
