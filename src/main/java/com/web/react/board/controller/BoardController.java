@@ -1,5 +1,10 @@
 package com.web.react.board.controller;
 
-public class BoardController {
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
+public class BoardController {
+	
+	
 }
